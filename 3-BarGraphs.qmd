@@ -1,0 +1,334 @@
+---
+title: "Bar Graphs"
+format: html
+editor: visual
+---
+
+```{r setup, include=FALSE, paged.print=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(gcookbook)
+library(patchwork)
+```
+
+# Bar graphs
+
+## Basic
+
+```{r}
+str(BOD)
+```
+
+```{r}
+cont_var_col <- ggplot(BOD, aes(x = Time, y = demand)) +
+  geom_col()
+disc_var_col <- ggplot(BOD, aes(x = factor(Time), y = demand)) +
+  geom_col(fill = "lightblue", color = "black")
+cont_var_col + disc_var_col
+```
+
+## Grouping by second variable
+
+```{r paged.print=FALSE}
+cabbage_exp
+```
+
+```{r}
+ggplot(cabbage_exp, aes(x = Date, y = Weight, fill = Cultivar)) +
+  geom_col(position = "dodge", color = "black")
+```
+
+```{r}
+ggplot(cabbage_exp, aes(x = Date, y = Weight, fill = Cultivar)) +
+  geom_col()
+```
+
+```{r}
+ggplot(cabbage_exp, aes(x = Date, y = Weight, fill = Cultivar)) +
+  geom_col(position = "dodge", color = "black") +
+  scale_fill_brewer(palette = "Pastel1")
+```
+
+## Counts
+
+```{r}
+ggplot(diamonds, aes(x = cut)) +
+  geom_bar()
+```
+
+```{r}
+discrete_values <- ggplot(diamonds, aes(x = carat)) +
+  geom_bar()
+range_of_values <- ggplot(diamonds, aes(x = carat)) +
+  geom_histogram()
+discrete_values + range_of_values
+```
+
+## Colors and reorder
+
+```{r}
+uspopchange
+```
+
+```{r}
+upc <- uspopchange |> 
+  arrange(desc(Change)) |> 
+  slice(1:10)
+ggplot(upc, aes(x = Abb, y = Change, fill = Region)) +
+  geom_col(color = "black") +
+  scale_fill_manual(values = c("#669933", "#FFCC66")) +
+  xlab("State")
+```
+
+```{r}
+ggplot(upc, aes(x = reorder(Abb, Change), y = Change, fill = Region)) +
+  geom_col(color = "black") +
+  scale_fill_manual(values = c("#669933", "#FFCC66")) +
+  xlab("State")
+```
+
+## Color negative and positive
+
+```{r}
+climate_sub <- climate |> 
+  filter(Source == "Berkeley" & Year >= 1900) |> 
+  mutate(pos = Anomaly10y >= 0)
+climate_sub
+```
+
+```{r}
+ggplot(climate_sub, aes(x = Year, y = Anomaly10y, fill = pos)) +
+  geom_col()
+```
+
+```{r}
+ggplot(climate_sub, aes(x = Year, y = Anomaly10y, fill = pos)) +
+  geom_col(color = "black", size = 0.25) +
+  scale_fill_manual(values = c("#CCEEFF", "#FFDDDD"), guide = "none")
+```
+
+## Adjusting width and spacing
+
+```{r}
+def_bars <- ggplot(pg_mean, aes(x = group, y = weight)) +
+  geom_col()
+narrow_bars <- ggplot(pg_mean, aes(x = group, y = weight)) +
+  geom_col(width = 0.5)
+wider_bars <- ggplot(pg_mean, aes(x = group, y = weight)) +
+  geom_col(width = 1)
+def_bars /  (narrow_bars + wider_bars)
+```
+
+```{r}
+grouped_narrow <- ggplot(cabbage_exp, aes(x = Date, y = Weight, fill = Cultivar)) +
+  geom_col(width = 0.5, position = "dodge")
+grouped_with_space <- ggplot(cabbage_exp, aes(x = Date, y = Weight, fill = Cultivar)) +
+  geom_col(width = 0.5, position = position_dodge(0.7))
+grouped_narrow + grouped_with_space
+```
+
+## Stacked bar graphs
+
+```{r}
+ggplot(cabbage_exp, aes(x = Date, y = Weight, fill = Cultivar)) +
+  geom_col()
+```
+
+```{r}
+ggplot(cabbage_exp, aes(x = Date, y = Weight, fill = Cultivar)) +
+  geom_col() +
+  guides(fill = guide_legend(reverse = TRUE))
+```
+
+```{r}
+ggplot(cabbage_exp, aes(x = Date, y = Weight, fill = Cultivar)) +
+  geom_col(position = position_stack(reverse = TRUE)) +
+  guides(fill = guide_legend(reverse = TRUE))
+```
+
+## Proportional stacked
+
+```{r}
+ggplot(cabbage_exp, aes(x = Date, y = Weight, fill = Cultivar)) +
+  geom_col(position = "fill", color = "black") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_brewer(palette = "Pastel1")
+```
+
+> Manually calculate percentages
+
+```{r}
+ce <- cabbage_exp |> 
+  group_by(Date) |> 
+  mutate(percent_weight = Weight / sum(Weight) * 100)
+ce
+```
+
+```{r}
+ggplot(ce, aes(x = Date, y = percent_weight, fill = Cultivar)) +
+  geom_col()
+```
+
+## Labels
+
+```{r}
+below_top <- ggplot(cabbage_exp, aes(x = interaction(Date, Cultivar), y = Weight)) +
+  geom_col() +
+  geom_text(aes(label = Weight), vjust = 1.5, colour = "white")
+
+above_top <- ggplot(cabbage_exp, aes(x = interaction(Date, Cultivar), y = Weight)) +
+  geom_col() +
+  geom_text(aes(label = Weight), vjust = -0.2)
+below_top + above_top
+```
+
+> Adding "count" labels
+
+```{r}
+ggplot(mtcars, aes(x = factor(cyl))) +
+  geom_bar() +
+  geom_text(aes(label = ..count..), stat = "count",
+            vjust = 1.5, color = "white")
+```
+
+> Adjust y limits to avoid going above or too close to the top of the graph
+
+```{r}
+p1 <- ggplot(cabbage_exp, aes(x = interaction(Date, Cultivar), y = Weight)) +
+  geom_col() +
+  geom_text(aes(label = Weight, vjust = -0.2))
+p2 <- ggplot(cabbage_exp, aes(x = interaction(Date, Cultivar), y = Weight)) +
+  geom_col() +
+  geom_text(aes(label = Weight, vjust = -0.2)) +
+  ylim(0, max(cabbage_exp$Weight) * 1.05)
+# or
+p3 <- ggplot(cabbage_exp, aes(x = interaction(Date, Cultivar), y = Weight)) +
+  geom_col() +
+  geom_text(aes(y = Weight + 0.1, label = Weight))
+p1 / (p2 + p3)
+```
+
+> For grouped bar graphs, specify `position = position_dodge()` and possibly the size.
+
+```{r}
+ggplot(cabbage_exp, aes(x = Date, y = Weight, fill = Cultivar)) +
+  geom_col(position = "dodge") +
+  geom_text(aes(label = Weight),
+            color = "white", size = 3,
+            vjust = 1.5, position = position_dodge(.9))
+```
+
+> For stacked bar graphs, need to calculate cumulative sum
+
+```{r}
+ce <- cabbage_exp |> 
+  arrange(Date, rev(Cultivar)) |> 
+  group_by(Date) |> 
+  mutate(label_y = cumsum(Weight))
+
+ce
+```
+
+```{r}
+ggplot(ce, aes(x = Date, y = Weight, fill = Cultivar)) +
+  geom_col() +
+  geom_text(aes(y = label_y, label = Weight),
+            vjust = 1.5, color = "white")
+```
+
+> When using labels, changes to the stacking order are best done by modifying the order of levels in the factor (see Recipe [15.8](https://r-graphics.org/RECIPE-DATAPREP-FACTOR-REORDER.html#RECIPE-DATAPREP-FACTOR-REORDER)) before taking the cumulative sum.
+>
+> Place labels in the middle of each bar
+
+```{r}
+ce <- cabbage_exp |> 
+  arrange(Date, rev(Cultivar)) |> 
+  group_by(Date) |> 
+  mutate(label_y = cumsum(Weight) - 0.5 * Weight)
+
+ggplot(ce, aes(x = Date, y = Weight, fill = Cultivar)) +
+  geom_col() +
+  geom_text(aes(y = label_y, label = Weight), color = "white")
+```
+
+> Formatting
+
+```{r}
+ggplot(ce, aes(x = Date, y = Weight, fill = Cultivar)) +
+  geom_col(color = "black") +
+  geom_text(aes(y = label_y, label = paste(format(Weight, nsmall = 2), "kg")),
+            size = 4) +
+  scale_fill_brewer(palette = "Pastel1")
+```
+
+## Cleveland dot plot - alternative to bar graph
+
+```{r}
+tophit <- tophitters2001[1:25,]
+
+ggplot(tophit, aes(x = avg, y = name)) +
+  geom_point()
+```
+
+```{r}
+str(tophit)
+```
+
+> Sorted
+
+```{r}
+ggplot(tophit, aes(x = avg, y = reorder(name, avg))) +
+  geom_point(size = 3) +
+  theme_bw() +
+  theme(
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    panel.grid.major.y = element_line(color = "grey60", linetype = "dashed")
+  )
+```
+
+> Swapped axes
+
+```{r}
+ggplot(tophit, aes(x = reorder(name, avg), y = avg)) +
+  geom_point(size = 3) +
+  theme_bw() +
+  theme(
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor.y = element_blank(),
+    panel.grid.major.x = element_line(color = "grey60", linetype = "dashed"),
+    axis.text.x = element_text(angle = 60, hjust = 1)
+  )
+```
+
+> Grouping by another variable
+
+```{r}
+name_order <- tophit$name[order(tophit$lg, tophit$avg)]
+tophit$name <- factor(tophit$name, levels = name_order)
+
+ggplot(tophit, aes(x = avg, y = name)) +
+  geom_segment(aes(yend = name), xend = 0, color = "grey50") +
+  geom_point(size = 3, aes(color = lg)) +
+  scale_color_brewer(palette = "Set1", limits = c("NL", "AL")) +
+  theme_bw() +
+  theme(
+    panel.grid.major.y = element_blank(),   # No horizontal grid lines
+    legend.position.inside = c(7, 7)           # Put legend inside plot area
+  )
+```
+
+> or use facets
+
+```{r}
+ggplot(tophit, aes(x = avg, y = name)) +
+  geom_segment(aes(yend = name), xend = 0, color = "grey50") +
+  geom_point(size = 3, aes(color = lg)) +
+  scale_color_brewer(palette = "Set1", limits = c("NL", "AL"), guide = F) +
+  theme_bw() +
+  theme(panel.grid.major.y = element_blank()) +
+  facet_grid(lg ~ ., scales = "free_y", space = "free_y")
+```
