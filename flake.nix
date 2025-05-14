@@ -27,6 +27,8 @@
             rPackages.patchwork
             rPackages.gcookbook
             rPackages.hexbin
+            rPackages.MASS
+            rPackages.ggrepel
             chromium
             pandoc
             texlive.combined.scheme-full
