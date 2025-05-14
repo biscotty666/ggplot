@@ -1,6 +1,6 @@
 ---
 title: "2-QuicklyExploringData"
-format: html
+format: gfm
 ---
 
 ```{r setup, include=FALSE, paged.print=FALSE}

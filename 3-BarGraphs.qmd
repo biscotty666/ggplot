@@ -1,7 +1,6 @@
 ---
 title: "Bar Graphs"
-format: html
-editor: visual
+format: gfm
 ---
 
 ```{r setup, include=FALSE, paged.print=FALSE}
