@@ -26,6 +26,7 @@
             rPackages.quarto
             rPackages.patchwork
             rPackages.gcookbook
+            rPackages.hexbin
             chromium
             pandoc
             texlive.combined.scheme-full
