@@ -1,0 +1,121 @@
+---
+title: "11 - Facets"
+format: gfm
+---
+
+```{r, setup, include=FALSE}
+knitr::opts_chunk$set(paged.print = FALSE)
+```
+
+```{r message=FALSE}
+library(tidyverse)
+library(gcookbook)
+library(patchwork)
+```
+
+[Source](https://r-graphics.org/)
+
+# Facets
+
+```{r}
+mpg_plot <- ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point()
+
+head(mpg)
+```
+
+> Horizontal facet by cyl
+
+```{r}
+mpg_plot +
+  facet_grid(. ~ cyl)
+```
+
+> Vertical facet by cyl
+
+```{r}
+mpg_plot +
+  facet_grid(cyl ~ .)
+```
+
+> Split by 2 variables
+
+```{r}
+mpg_plot +
+  facet_grid(drv ~ cyl)
+```
+
+```{r}
+mpg_plot +
+  facet_wrap( ~ class)
+```
+
+> Specify number of rows or columns
+
+```{r}
+p1 <- mpg_plot +
+  facet_wrap( ~ class, nrow = 2)
+
+p2 <- mpg_plot +
+  facet_wrap( ~ class, ncol = 4)
+
+p1 / p2
+```
+
+> use different axes for subplots
+
+```{r}
+mpg_plot +
+  facet_grid(drv ~ cyl, scales = "free_y")
+```
+
+```{r}
+mpg_plot +
+  facet_grid(drv ~ cyl, scales = "free")
+```
+
+## Changing text of facet labels
+
+```{r}
+mpg_mod <- mpg |> 
+  mutate(drv = recode(drv, "4" = "4wd", "f" = "Fron", "r" = "Rear"))
+
+ggplot(mpg_mod, aes(x = displ, y = hwy)) +
+  geom_point() +
+  facet_grid(drv ~ .)
+```
+
+> label_both() to show variable name and value
+
+```{r}
+ggplot(mpg_mod, aes(x = displ, y = hwy)) +
+  geom_point() +
+  facet_grid(drv ~ ., labeller = label_both)
+```
+
+> `label_parsed()` for math expressiong
+
+```{r}
+mpg_mod <- mpg |> 
+  mutate(drv = recode(drv,
+    "4" = "4^{wd}",
+    "f" = "- Front %.% e^{pi * i}",
+    "r" = "4^{wd} - Front"
+  ))
+
+ggplot(mpg_mod, aes(x = displ, y = hwy)) +
+  geom_point() +
+  facet_grid(drv ~ ., labeller = label_parsed)
+```
+
+## Changing appearance of facet labels and headers
+
+```{r}
+ggplot(cabbage_exp, aes(x = Cultivar, y = Weight)) +
+  geom_col() +
+  facet_grid(. ~ Date) +
+  theme(
+    strip.text = element_text(face = "bold", size = rel(1.5)),
+    strip.background = element_rect(fill = "lightblue", colour = "black", size = 1)
+  )
+```
