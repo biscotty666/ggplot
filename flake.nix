@@ -27,6 +27,11 @@
             rPackages.patchwork
             rPackages.gcookbook
             rPackages.hexbin
+            rPackages.webshot2
+            rPackages.mapproj
+            rPackages.rgl
+            rPackages.ggcorrplot
+            rPackages.corrplot
             rPackages.vcd
             rPackages.maps
             rPackages.MASS
