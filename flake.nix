@@ -27,22 +27,28 @@
             rstudio
             quarto
             (with rPackages; [
+              concaveman
               corrplot
               gcookbook
+              geomtextpath
               ggblend
               ggcorrplot
               ggdensity
+              ggdist
               ggforce
               ggpointdensity
               ggrepel
               ggtext
               ggiraph
+              ggridges
+              gt
               hexbin
               igraph
               mapproj
               maps
               MASS
               pagedown
+              palmerpenguins
               patchwork
               quarto
               remotes
