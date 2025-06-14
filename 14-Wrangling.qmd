@@ -1,0 +1,52 @@
+---
+title: "15 - Data Wrangling"
+format: gfm
+---
+
+```{r, setup, include=FALSE}
+knitr::opts_chunk$set(paged.print = FALSE)
+```
+
+```{r message=FALSE}
+library(tidyverse)
+library(gcookbook)
+library(patchwork)
+```
+
+[Source](https://r-graphics.org/)
+
+# Data Wrangling
+
+## Create a data frame
+
+```{r}
+g <- c("A", "B", "C")
+x <- 1:3
+dat <- data.frame(g, x)
+dat
+```
+
+> if vectors in a list
+
+```{r}
+lst <- list(group = g, value = x)    # A list of vectors
+
+dat <- as.data.frame(lst)
+dat
+```
+
+> with tidyverse
+
+```{r}
+tibble(g, x)
+```
+
+```{r}
+as_tibble(lst)
+```
+
+```{r}
+as_tibble(dat)
+```
+
+## Adding a column
