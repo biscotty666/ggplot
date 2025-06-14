@@ -21,30 +21,39 @@
         venvDir = "./.venv";
         buildInputs = with pkgs; [
             R
-            rPackages.pagedown
-            rPackages.tidyverse
-            rPackages.quarto
-            rPackages.patchwork
-            rPackages.gcookbook
-            rPackages.hexbin
-            rPackages.webshot2
-            rPackages.mapproj
-            rPackages.rgl
-            rPackages.ggcorrplot
-            rPackages.corrplot
-            rPackages.vcd
-            rPackages.maps
-            rPackages.MASS
-            rPackages.ggrepel
-            rPackages.igraph
-            rPackages.sf
-            rPackages.tidyr
             chromium
             pandoc
             texlive.combined.scheme-full
             rstudio
             quarto
-        ];
+            (with rPackages; [
+              corrplot
+              gcookbook
+              ggblend
+              ggcorrplot
+              ggdensity
+              ggforce
+              ggpointdensity
+              ggrepel
+              ggtext
+              ggiraph
+              hexbin
+              igraph
+              mapproj
+              maps
+              MASS
+              pagedown
+              patchwork
+              quarto
+              remotes
+              rgl
+              sf
+              tidyr
+              tidyverse
+              vcd
+              webshot2
+            ])
+         ];
 
         shellHook = ''
             export BROWSER=zen
